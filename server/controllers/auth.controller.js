@@ -3,25 +3,17 @@ import bcryptjs from 'bcryptjs';
 import jwt from 'jsonwebtoken';
 import { errorHandler } from '../utils/error.js';
 
-export const signup = async (req, res) => {
-    const {username, email, password} = req.body;
+export const signup = async (req, res, next) => {
+    const { username, email, password } = req.body;
     const hashedPassword = bcryptjs.hashSync(password, 10);
-
-    try{
-        if(!username || !email || !password) {
-            return res.status(400).json({message: "Please fill all the fields"});
-        }
-
-        const userExists = await User.findOne({username, email});
-        if(userExists) {
-            return res.status(400).json({message: "User already exists"});
-        }
-        await User.create({username, email, password: hashedPassword});
-        res.status(201).json({message: "User created successfully"});
-    } catch(err) {
-        res.status(500).json({message: "Server Error", err});
+    const newUser = new User({ username, email, password: hashedPassword });
+    try {
+        await newUser.save();
+    res.status(201).json({ message: 'User created successfully' });
+    } catch (error) {
+        next(error);
     }
-}
+};
 
 export const signin = async (req, res, next) => {
     const {email, password} = req.body;
