@@ -4,8 +4,8 @@ import { Link } from 'react-router-dom'
 const Header = () => {
   return (
     <header className='bg-slate-200'>
-        <div className='flex items-center justify-between max-w-6xl mx-auto p-3'>
-            <Link to="/" className='font-bold'>Authify</Link>
+        <div className='flex items-center justify-between max-w-6xl mx-auto p-5'>
+            <Link to="/" className='font-bold text-xl'>Authify</Link>
             <ul className='flex gap-4'>
                 <li>
                     <Link to="/">Home</Link>
