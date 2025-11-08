@@ -1,49 +1,49 @@
+// import React  from 'react'
 import { useState } from 'react'
-import axios from "axios";
 import{ Link, useNavigate } from 'react-router-dom'
 
 const SignUp = () => {
   const [formData, setFormData] = useState({});
   const [loading, setLoading] = useState(false);
-  const [errorMessage, setErrorMessage] = useState(false);
+  const [error, setError] = useState(false);
   const navigate = useNavigate();
 
- const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.id]: e.target.value });
-  };
+const handleChange = (e) => {
+  setFormData({...formData, [e.target.id]: e.target.value});
+}
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
+const handleSubmit = async(e) => {
+  e.preventDefault();
 
-    try {
-      setLoading(true);
-
-      const res = await axios.post("http://localhost:5000/api/auth/signup", formData);
-
-      console.log(res.data);
-
-      // Check backend response
-      if (res.data.success === false) {
-        setErrorMessage(res.data.message);
+  try{
+    setLoading(true);
+      const res = await fetch('/api/auth/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'Application/json',
+        },
+        body: JSON.stringify(formData),
+      });
+      const data = await res.json();
+      setError(data.message);
+      console.log(data);
+      
+      if(data.success === false) {
+        setError(data.message);
         setLoading(false);
         return;
       }
-
-      setErrorMessage(false)
-      // Navigate on success
-      navigate("/sign-in");
-
-    } catch (err) {
-      setLoading(false);
-
-      // Handle backend or network errors
-      if (err.response && err.response.data) {
-        setErrorMessage(err.response.data.message);
+      navigate('/sign-in');
+      
+  }catch(err) {
+    setLoading(false);
+      if (err.response) {
+        setError(err.response.data.message);
       } else {
-        setErrorMessage("Something went wrong!");
+        setError("Something went wrong");
       }
-    }
-  };
+  }
+};
 
   return (
     <div className='p-3 max-w-lg mx-auto'>
@@ -85,7 +85,7 @@ const SignUp = () => {
               Sign in
           </Link>
       </div>
-      { errorMessage && <p className='text-red-500 mt-5'>{errorMessage}</p>}
+      { error && <p className='text-red-500 mt-5'>{error}</p>}
     </div>
   )
 }
